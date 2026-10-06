@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cockpit perso</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌴</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root{
+    --fond:#e2e3e6; --carte:#fbfbfc; --carte2:#f2f3f5;
+    --encre:#2b2d33; --txt:#2b2d33; --txt2:#55575f;
+    --vert:#2e9676; --vert-fonce:#14503d; --vert-pale:#e2f4ec;
+    --or:#a97c2e; --or-pale:#f6efe2;
+    --bord-leger:#dcdde1; --bord-moyen:#8e919a; --bord-fort:#2b2d33;
+    --header-fond:#2b2d33; --header-txt:#ffffff;
+    --seg1:#2e9676; --seg2:#a97c2e; --seg3:#7c3d1e; --seg4:#7d8190;
+    --f-titre:'Archivo','Verdana',sans-serif;
+    --f-texte:'Atkinson Hyperlegible','Verdana',sans-serif;
+    --ombre:0 1px 4px rgba(43,45,51,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --fond:#1b1d21; --carte:#24262b; --carte2:#2a2c32;
+      --encre:#e2e3e6; --txt:#e2e3e6; --txt2:#a3a6ad;
+      --vert:#3aa886; --vert-fonce:#7fd0b4; --vert-pale:#143528;
+      --or:#c19540; --or-pale:#332a18;
+      --bord-leger:#33363d; --bord-moyen:#5a5e68; --bord-fort:#8e919a;
+      --header-fond:#111317; --header-txt:#e2e3e6;
+      --seg1:#3aa886; --seg2:#c99b3f; --seg3:#b65a37; --seg4:#969aa6;
+      --ombre:0 1px 4px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --fond:#1b1d21; --carte:#24262b; --carte2:#2a2c32;
+    --encre:#e2e3e6; --txt:#e2e3e6; --txt2:#a3a6ad;
+    --vert:#3aa886; --vert-fonce:#7fd0b4; --vert-pale:#143528;
+    --or:#c19540; --or-pale:#332a18;
+    --bord-leger:#33363d; --bord-moyen:#5a5e68; --bord-fort:#8e919a;
+    --header-fond:#111317; --header-txt:#e2e3e6;
+    --seg1:#3aa886; --seg2:#c99b3f; --seg3:#b65a37; --seg4:#969aa6;
+    --ombre:0 1px 4px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fond);color:var(--txt);font-family:var(--f-texte);font-size:16px;line-height:1.55}
+  a{color:var(--vert);text-decoration:none;border-bottom:1px solid transparent}
+  a:hover{color:var(--vert-fonce);border-bottom-color:var(--vert-fonce)}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--vert);outline-offset:2px}
+
+  /* ── Bande de titre ── */
+  header.bande{background:var(--header-fond);color:var(--header-txt);padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .losange{width:34px;height:34px;border:2.5px solid var(--header-txt);transform:rotate(45deg);display:flex;align-items:center;justify-content:center;flex:none;margin:4px 8px}
+  .losange span{transform:rotate(-45deg);font-family:var(--f-titre);font-weight:800;font-size:13px;letter-spacing:.5px}
+  header.bande h1{font-family:var(--f-titre);font-weight:800;font-size:1.35rem;margin:0;letter-spacing:.3px}
+  header.bande .sous{font-size:.85rem;opacity:.75;margin-left:auto;text-align:right}
+  header.bande .sous strong{font-weight:700}
+
+  /* ── Onglets ── */
+  nav.onglets{background:var(--carte);border-bottom:1.5px solid var(--bord-leger);padding:0 16px;display:flex;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:9}
+  nav.onglets button{appearance:none;background:none;border:none;border-bottom:3px solid transparent;padding:13px 16px 10px;font-family:var(--f-titre);font-weight:700;font-size:.95rem;color:var(--txt2);cursor:pointer;white-space:nowrap;letter-spacing:.2px}
+  nav.onglets button:hover{color:var(--txt)}
+  nav.onglets button[aria-selected="true"]{color:var(--txt);border-bottom-color:var(--vert)}
+
+  main{max-width:1100px;margin:0 auto;padding:22px 16px 60px}
+  .panneau{display:none}
+  .panneau.actif{display:block}
+
+  /* ── Blocs ── */
+  section.bloc{background:var(--carte);border:1.5px solid var(--bord-leger);border-radius:3px;box-shadow:var(--ombre);padding:16px 18px;margin-bottom:18px}
+  section.bloc>h2{font-family:var(--f-titre);font-weight:800;font-size:1.02rem;margin:0 0 4px;padding-left:10px;border-left:4px solid var(--vert);letter-spacing:.3px;text-wrap:balance}
+  section.bloc>.note{color:var(--txt2);font-size:.85rem;margin:0 0 12px;padding-left:14px}
+  .grille2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+
+  /* ── KPI ── */
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:var(--carte);border:1.5px solid var(--bord-leger);border-radius:3px;padding:12px 14px;box-shadow:var(--ombre)}
+  .kpi .val{font-family:var(--f-titre);font-weight:800;font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi .lib{font-size:.8rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-top:2px}
+  .kpi .det{font-size:.8rem;color:var(--txt2);margin-top:3px}
+  .kpi.alerte .val{color:var(--or)}
+
+  /* ── Badges / pastilles ── */
+  .badge{display:inline-block;border:2px solid var(--bord-fort);border-radius:3px;padding:0 6px;font-family:var(--f-titre);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;vertical-align:1px}
+  .badge.vert{border-color:var(--vert);color:var(--vert)}
+  .badge.or{border-color:var(--or);color:var(--or)}
+  .chemin{font-size:.78rem;color:var(--txt2);font-variant-numeric:tabular-nums}
+
+  /* ── Listes ── */
+  ul.liste{list-style:none;margin:0;padding:0}
+  ul.liste li{padding:8px 2px;border-bottom:1px solid var(--bord-leger)}
+  ul.liste li:last-child{border-bottom:none}
+  ul.liste .quand{font-family:var(--f-titre);font-weight:700;font-size:.8rem;color:var(--txt2)}
+
+  /* ── Tables ── */
+  .defile{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:.92rem}
+  th{font-family:var(--f-titre);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);text-align:left;padding:7px 10px;border-bottom:2px solid var(--bord-moyen)}
+  td{padding:8px 10px;border-bottom:1px solid var(--bord-leger);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+
+  /* ── Bloquants ── */
+  .bloquant{display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid var(--bord-leger);align-items:baseline}
+  .bloquant:last-child{border-bottom:none}
+  .bloquant .num{font-family:var(--f-titre);font-weight:800;color:var(--or);flex:none;font-variant-numeric:tabular-nums}
+  .bloquant .debloque{color:var(--txt2);font-size:.85rem}
+
+  /* ── Veille ── */
+  .carte-veille{border:1.5px solid var(--bord-leger);border-left:4px solid var(--or);border-radius:3px;padding:10px 12px;margin-bottom:10px;background:var(--carte2)}
+  .carte-veille:last-child{margin-bottom:0}
+  .carte-veille .titre-v{font-family:var(--f-titre);font-weight:700}
+  .carte-veille .dom{font-size:.72rem;font-family:var(--f-titre);font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--vert)}
+  .vide{border:2px dashed var(--bord-moyen);border-radius:3px;padding:18px;text-align:center;color:var(--txt2)}
+  .vide strong{color:var(--txt)}
+
+  /* ── Barre triage ── */
+  .barre-triage{display:flex;height:26px;border-radius:3px;overflow:hidden;gap:2px;background:var(--fond);margin:10px 0 8px}
+  .barre-triage div{min-width:8px}
+  .legende-triage{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem}
+  .legende-triage .pion{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .legende-triage b{font-variant-numeric:tabular-nums}
+
+  /* ── Liens rapides ── */
+  .tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  a.tuile{display:block;border:1.5px solid var(--bord-moyen);border-radius:3px;padding:10px 12px;color:var(--txt);background:var(--carte)}
+  a.tuile:hover{border-color:var(--vert);background:var(--vert-pale);color:var(--txt)}
+  a.tuile .t{display:block;font-family:var(--f-titre);font-weight:700;font-size:.92rem}
+  a.tuile .d{display:block;font-size:.78rem;color:var(--txt2)}
+
+  /* ── Bouton passerelle Hub ── */
+  a.bouton-hub{display:inline-flex;align-items:center;gap:9px;color:var(--header-txt);border:2px solid var(--header-txt);border-bottom-color:var(--header-txt);border-radius:3px;padding:7px 13px;font-family:var(--f-titre);font-weight:700;font-size:.88rem;letter-spacing:.3px}
+  a.bouton-hub:hover{background:var(--header-txt);color:var(--header-fond);border-color:var(--header-txt)}
+  a.bouton-hub .url{font-family:var(--f-texte);font-weight:400;font-size:.74rem;opacity:.72;letter-spacing:0}
+
+  /* ── IA locale ── */
+  .ia-etat{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:14px}
+  .ia-carte{border:1.5px solid var(--bord-leger);border-left:4px solid var(--vert);border-radius:3px;padding:9px 12px;background:var(--carte2)}
+  .ia-carte .t{font-family:var(--f-titre);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2)}
+  .ia-carte .v{font-family:var(--f-titre);font-weight:800;font-size:1.05rem;line-height:1.3}
+  .ia-carte .d{font-size:.8rem;color:var(--txt2)}
+  .ia-carte.stop{border-left-color:var(--or)}
+  .ia-carte.dodo{border-left-color:var(--seg4)}
+
+  /* ── Bandeau d'alerte fraîcheur ── */
+  .alerte-donnees{background:var(--or-pale);color:var(--txt);border-bottom:2px solid var(--or);padding:10px 24px;font-size:.9rem;display:none}
+  .alerte-donnees.on{display:block}
+  .alerte-donnees code{background:var(--carte);padding:1px 5px;border-radius:2px;font-size:.85em}
+
+
+  /* ── Perso ── */
+  .p-form{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .p-form input,.p-form select,.p-filtres select,#perso td input,#perso td select{font:inherit;font-size:.9rem;padding:5px 8px;border:1.5px solid var(--bord-moyen);border-radius:3px;background:var(--carte);color:var(--txt);min-width:0}
+  .p-form input[placeholder^="Échéance"],.p-form input[placeholder^="Titre"],.p-form input[placeholder="Achat"]{flex:1 1 160px}
+  #perso button{font-family:var(--f-titre);font-weight:700;font-size:.85rem;padding:5px 12px;border:2px solid var(--bord-fort);border-radius:3px;background:var(--carte);color:var(--txt);cursor:pointer}
+  #perso button:hover{background:var(--vert-pale);border-color:var(--vert)}
+  #perso button.mini{padding:0 6px;font-size:.78rem;border-width:1.5px;margin-left:4px}
+  .p-filtres{display:flex;gap:6px;margin-bottom:8px}
+  .p-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+  .p-kpis div{background:var(--carte2);border:1.5px solid var(--bord-leger);border-radius:3px;padding:7px 10px}
+  .p-kpis b{display:block;font-family:var(--f-titre);font-weight:800;font-size:1.15rem;font-variant-numeric:tabular-nums}
+  .p-kpis span{font-size:.74rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+  .p-kpis .neg b{color:var(--or)}
+  .pion-s{display:inline-block;width:22px;height:22px;border:2.5px solid var(--bord-fort);border-radius:50%;margin-right:6px;vertical-align:middle}
+  .pion-s.on{background:var(--vert);border-color:var(--vert)}
+  .p-barre{display:grid;grid-template-columns:100px 1fr auto;align-items:center;gap:8px;font-size:.85rem;margin:4px 0}
+  .p-barre i{display:block;height:10px;background:var(--seg2);border-radius:2px;min-width:2px}
+  details summary{list-style:revert}
+  @media print{#perso button,.p-form{display:none}}
+  footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;color:var(--txt2);font-size:.82rem;text-align:center}
+  @media (prefers-reduced-motion: no-preference){
+    .panneau.actif{animation:app .18s ease-out}
+    @keyframes app{from{opacity:.4;transform:translateY(3px)}to{opacity:1;transform:none}}
+  }
+  @media print{
+    nav.onglets,.tuiles,a.bouton-hub{display:none}
+    .panneau{display:block!important}
+    body{background:#fff}
+  }
+</style>
+<style>
+  main{max-width:900px}
+  .sync{font-size:.8rem;opacity:.8}.sync.ok{color:var(--vert)}.sync.ko{color:var(--or)}
+  header.bande .sync{margin-left:auto}
+  #perso{display:block}
+  @media (max-width:600px){header.bande{padding:12px 16px}header.bande h1{font-size:1.1rem}.grille2{grid-template-columns:1fr}main{padding:14px 10px 40px}.p-form input,.p-form select{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="bande">
+  <div class="losange"><span>SC</span></div>
+  <h1>Cockpit perso</h1>
+  <span class="sync" id="sync-etat">…</span>
+</header>
+<main>
+<div id="perso">
+  <div id="perso-racine"></div>
+  <section class="bloc">
+    <h2>☁️ Synchro entre appareils</h2>
+    <p class="note">Les données sont enregistrées dans un gist GitHub privé. Colle ici un token GitHub (portée <code>gist</code> uniquement). Laisse l'id vide la première fois : le gist est créé pour toi, puis recopie l'id sur l'autre appareil.</p>
+    <div class="p-form"><input id="sy-t" type="password" placeholder="Token GitHub (ghp_…)" style="flex:1 1 200px"><input id="sy-g" placeholder="Id du gist" style="flex:1 1 160px"><button data-sync="save">Enregistrer</button><button data-sync="pull">Recharger</button><button data-sync="oubli" class="mini">Oublier</button></div>
+  </section>
+</div>
+</main>
+<footer>Page autonome · aucune donnée de classe · sauvegarde locale + gist</footer>
+<script src="perso.js"></script>
+<script src="sync.js"></script>
+</body>
+</html>
