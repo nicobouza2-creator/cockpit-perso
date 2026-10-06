@@ -6,15 +6,16 @@
   function api(m,url,body){return fetch('https://api.github.com'+url,{method:m,headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:body?JSON.stringify(body):undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
   function pret(){return cfg.token&&cfg.gist;}
   function pull(){
-    if(!pret()){dit('⚙ non configuré','off');return;}
+    if(!pret()){dit('⚙ non configuré','off');if(window.BriefUI)BriefUI.render(null);return;}
     dit('⟳ lecture…');
     api('GET','/gists/'+cfg.gist).then(function(g){
+      var fb=g.files['cockpit-brief.json']; if(fb&&window.BriefUI){try{BriefUI.render(JSON.parse(fb.content));}catch(x){}}
       var f=g.files[FICHIER]; if(!f){dit('✓ gist vide, 1re écriture');return push(window.PersoEtat(),true);}
       var dist=JSON.parse(f.content), loc=window.PersoEtat();
       if(!loc._maj||(dist._maj&&dist._maj>loc._maj)){window.PersoRemplace(dist);dit('✓ à jour ('+(dist._maj||'').slice(0,16).replace('T',' ')+')','ok');}
       else if(loc._maj>(dist._maj||'')){push(loc,true);}
       else dit('✓ à jour','ok');
-    }).catch(function(e){dit('✗ lecture : '+e.message,'ko');});
+    }).catch(function(e){dit('✗ lecture : '+e.message,'ko');if(window.BriefUI)BriefUI.render(null);});
   }
   function push(S,now){
     if(!pret())return;

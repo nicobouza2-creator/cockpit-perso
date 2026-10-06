@@ -154,6 +154,7 @@
   #perso button{font-family:var(--f-titre);font-weight:700;font-size:.85rem;padding:5px 12px;border:2px solid var(--bord-fort);border-radius:3px;background:var(--carte);color:var(--txt);cursor:pointer}
   #perso button:hover{background:var(--vert-pale);border-color:var(--vert)}
   #perso button.mini{padding:0 6px;font-size:.78rem;border-width:1.5px;margin-left:4px}
+  #perso button.hab{border-radius:50%;width:26px;height:26px;padding:0;margin:0}#perso button.hab.on{background:var(--vert);border-color:var(--vert);color:#fff}
   .p-filtres{display:flex;gap:6px;margin-bottom:8px}
   .p-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
   .p-kpis div{background:var(--carte2);border:1.5px solid var(--bord-leger);border-radius:3px;padding:7px 10px}
@@ -179,6 +180,7 @@
 </style>
 <style>
   main{max-width:900px}
+  .bh{font-family:var(--f-titre);font-weight:800;font-size:.95rem;margin:10px 0 4px}.bh .chemin{font-weight:400;margin-left:6px}
   .sync{font-size:.8rem;opacity:.8}.sync.ok{color:var(--vert)}.sync.ko{color:var(--or)}
   header.bande .sync{margin-left:auto}
   #perso{display:block}
@@ -193,6 +195,7 @@
 </header>
 <main>
 <div id="perso">
+  <section class="bloc"><h2>🧭 Brief de l'assistant</h2><div id="brief-racine"><div class="vide">Chargement…</div></div></section>
   <div id="perso-racine"></div>
   <section class="bloc">
     <h2>☁️ Synchro entre appareils</h2>
@@ -202,6 +205,7 @@
 </div>
 </main>
 <footer>Page autonome · aucune donnée de classe · sauvegarde locale + gist</footer>
+<script src="brief-ui.js"></script>
 <script src="perso.js"></script>
 <script src="sync.js"></script>
 </body>
